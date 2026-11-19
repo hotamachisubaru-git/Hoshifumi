@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+    <AssemblyName>Hoshifumi</AssemblyName>
+    <Product>星ふみ郵便局</Product>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
+    <None Update="Assets/**/*;ThirdParty/*.txt;Media/screens.png;README.md;THIRD-PARTY.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="IncludeRuntimeNotices" AfterTargets="ComputeFilesToPublish" Condition="'$(SelfContained)' == 'true'">
+    <ItemGroup>
+      <_CorePack Include="@(ResolvedRuntimePack)" Condition="'%(ResolvedRuntimePack.FrameworkName)' == 'Microsoft.NETCore.App'" />
+      <_RuntimeNotice Include="@(_CorePack->'%(PackageDirectory)/LICENSE.TXT');@(_CorePack->'%(PackageDirectory)/THIRD-PARTY-NOTICES.TXT')" />
+      <ResolvedFileToPublish Include="@(_RuntimeNotice)" Condition="Exists('%(_RuntimeNotice.Identity)')">
+        <RelativePath>ThirdParty/dotnet-%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+</Project>

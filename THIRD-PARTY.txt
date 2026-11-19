@@ -1,0 +1,17 @@
+星ふみ郵便局 / Hoshifumi
+
+文字表示には美咲ゴシック（2021-05-05）の字形を使用しています。
+Misaki Gothic font: Copyright (C) 2002-2021 Num Kadoma
+https://littlelimit.net/misaki.htm
+
+These fonts are free softwares.
+Unlimited permission is granted to use, copy, and distribute it, with or without modification, either commercially and noncommercially.
+THESE FONTS ARE PROVIDED "AS IS" WITHOUT WARRANTY.
+
+実行用パッケージには .NET、MonoGame DesktopGL、SDL2、OpenAL Soft、
+NVorbis およびその依存ライブラリが含まれます。
+.NET: https://github.com/dotnet/runtime
+MonoGame: https://github.com/MonoGame/MonoGame
+SDL: https://github.com/libsdl-org/SDL
+OpenAL Soft: https://github.com/kcat/openal-soft
+NVorbis: https://github.com/NVorbis/NVorbis
