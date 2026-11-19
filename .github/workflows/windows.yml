@@ -1,0 +1,29 @@
+name: Windows build
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Verify all seven chapters
+        run: dotnet run -c Release -- --verify
+      - name: Publish Windows x64
+        run: dotnet publish -c Release -r win-x64 --self-contained true -o out/win-x64
+      - name: Check Windows executable
+        shell: pwsh
+        run: |
+          $game = Start-Process ./out/win-x64/Hoshifumi.exe -ArgumentList '--verify' -Wait -PassThru
+          if ($game.ExitCode -ne 0) { throw "Campaign verification exited with $($game.ExitCode)." }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Hoshifumi-win-x64
+          path: out/win-x64/
+          if-no-files-found: error
