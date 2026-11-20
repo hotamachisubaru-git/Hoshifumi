@@ -22,6 +22,11 @@ jobs:
         run: |
           $game = Start-Process ./out/win-x64/Hoshifumi.exe -ArgumentList '--verify' -Wait -PassThru
           if ($game.ExitCode -ne 0) { throw "Campaign verification exited with $($game.ExitCode)." }
+      - name: Check the Japanese window caption and both icons
+        shell: pwsh
+        env:
+          ALSOFT_DRIVERS: 'null'
+        run: ./Tools/Test-Window.ps1 ./out/win-x64/Hoshifumi.exe
       - uses: actions/upload-artifact@v4
         with:
           name: Hoshifumi-win-x64

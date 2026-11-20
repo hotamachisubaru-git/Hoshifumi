@@ -26,7 +26,6 @@ public sealed partial class PostalGame : Microsoft.Xna.Framework.Game
         this.capture=capture;
         graphics=new GraphicsDeviceManager(this){PreferredBackBufferWidth=W*3,PreferredBackBufferHeight=H*3,
             SynchronizeWithVerticalRetrace=true,HardwareModeSwitch=false};
-        Window.Title="星ふみ郵便局 | HOSHIFUMI";
         IsMouseVisible=false;
         string path=capture!=null?Path.Combine(capture,"capture-save.json"):
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Hoshifumi","save.json");
@@ -35,6 +34,8 @@ public sealed partial class PostalGame : Microsoft.Xna.Framework.Game
     }
     protected override void LoadContent()
     {
+        // DesktopGL's post-creation title setter sends Japanese text as UTF-8 on Windows.
+        Window.Title="星ふみ郵便局 | HOSHIFUMI";
         batch=new(GraphicsDevice);dot=new(GraphicsDevice,1,1);dot.SetData(new[]{Color.White});
         canvas=new(GraphicsDevice,W,H,false,SurfaceFormat.Color,DepthFormat.None,0,RenderTargetUsage.PreserveContents);
         string dir=Path.Combine(ContentFiles.Root,"Graphics");
