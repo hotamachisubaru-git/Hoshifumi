@@ -22,23 +22,23 @@ jobs:
         run: |
           $game = Start-Process ./out/win-x64/Hoshifumi.exe -ArgumentList '--verify' -Wait -PassThru
           if ($game.ExitCode -ne 0) { throw "Campaign verification exited with $($game.ExitCode)." }
+      - name: Copy the game for the desktop smoke test
+        shell: pwsh
+        run: Copy-Item ./out/win-x64 "$env:RUNNER_TEMP/hoshifumi-window" -Recurse
+      - name: Install per-application software OpenGL for the test copy
+        uses: f3d-app/install-mesa-windows-action@1824e370ed7fb1795f5bc88fd1f6c81eb15d92bc # v1
+        with:
+          path: ${{ runner.temp }}/hoshifumi-window
+          version: '23.3.5'
       - name: Check the Japanese window caption and both icons
         shell: pwsh
         env:
           ALSOFT_DRIVERS: 'null'
         run: |
-          # Provide a software OpenGL driver on the GPU-less Windows runner for this test only.
-          python -m pip download --disable-pip-version-check --no-deps --only-binary=:all: --dest "$env:RUNNER_TEMP" PyQt5-Qt5==5.15.2
-          if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          $wheel = Get-ChildItem "$env:RUNNER_TEMP/PyQt5_Qt5-5.15.2-*-win_amd64.whl"
-          $driver = Join-Path $env:RUNNER_TEMP opengl32sw.dll
-          $archive = [IO.Compression.ZipFile]::OpenRead($wheel.FullName)
-          try {
-            [IO.Compression.ZipFileExtensions]::ExtractToFile($archive.GetEntry('PyQt5/Qt5/bin/opengl32sw.dll'), $driver, $true)
-          } finally { $archive.Dispose() }
-          if ((Get-FileHash $driver).Hash -ne '963641a718f9cae2705d5299eae9b7444e84e72ab3bef96a691510dd05fa1da4') { throw 'Unexpected software renderer' }
-          $env:SDL_OPENGL_LIBRARY = $driver
-          ./Tools/Test-Window.ps1 ./out/win-x64/Hoshifumi.exe
+          $testDir = Join-Path $env:RUNNER_TEMP hoshifumi-window
+          $env:SDL_OPENGL_LIBRARY = (Resolve-Path "$testDir/opengl32.dll").Path
+          New-Item -ItemType File -Path "$testDir/Hoshifumi.exe.local" | Out-Null
+          ./Tools/Test-Window.ps1 "$testDir/Hoshifumi.exe"
       - uses: actions/upload-artifact@v4
         with:
           name: Hoshifumi-win-x64
