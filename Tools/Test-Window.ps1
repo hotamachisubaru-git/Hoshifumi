@@ -41,7 +41,11 @@ try {
     do {
         Start-Sleep -Milliseconds 200
         $game.Refresh()
-        if ($game.HasExited) { throw "The game exited before showing its window ($($game.ExitCode))." }
+        if ($game.HasExited) {
+            Get-WinEvent -FilterHashtable @{LogName='Application'; ProviderName='.NET Runtime'; StartTime=$game.StartTime} -ErrorAction SilentlyContinue |
+                Where-Object Message -Like '*Hoshifumi*' | Select-Object -First 1 -ExpandProperty Message | Write-Host
+            throw "The game exited before showing its window ($($game.ExitCode))."
+        }
         if ($game.MainWindowHandle -ne [IntPtr]::Zero -and $game.MainWindowTitle -ceq $expected) { break }
     } while ([DateTime]::UtcNow -lt $deadline)
     if ($game.MainWindowTitle -cne $expected) { throw "Unexpected Windows caption: '$($game.MainWindowTitle)'." }
